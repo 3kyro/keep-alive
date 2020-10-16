@@ -1,0 +1,38 @@
+#ifndef HSNET_H
+#define HSNET_H
+
+#ifdef _WIN32
+# include <winsock2.h>
+# include <ws2tcpip.h>
+# include <mswsock.h>
+# include <Mstcpip.h>
+#endif
+
+#ifndef INLINE
+# if defined(_MSC_VER)
+#  define INLINE extern __inline
+# elif defined(__GNUC_GNU_INLINE__)
+#  define INLINE extern inline
+# else
+#  define INLINE inline
+# endif
+#endif
+
+INLINE void 
+winSetKeepAlive(int s, ULONG onoff, ULONG time, ULONG intvl) {
+
+    struct tcp_keepalive ka;
+
+    DWORD size;
+    
+    ka.onoff = onoff; 
+    ka.keepalivetime = time;
+    ka.keepaliveinterval = intvl;
+    int sizeka = sizeof(ka);
+
+    WSAIoctl(s, SIO_KEEPALIVE_VALS, &ka, sizeka, NULL, 0, &size, NULL, NULL);
+
+};
+
+#endif /* HSNET_H */
+
