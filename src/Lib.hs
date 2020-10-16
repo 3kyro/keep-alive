@@ -17,10 +17,38 @@ data KeepAlive = KeepAlive
     }
     deriving (Show, Eq, Ord)
 
-setKeepAlive :: CInt -> KeepAlive -> IO ()
-setKeepAlive fd (KeepAlive onoff idle intvl) =
-    setKeepAlive_ fd (cFromBool onoff) idle intvl
+data KeepAliveError
+    = WSA_IO_PENDING
+    | WSA_OPERATION_ABORTED
+    | WSAEFAULT
+    | WSAEINPROGRESS
+    | WSAEINTR
+    | WSAEINVAL
+    | WSAENETDOWN
+    | WSAENOPROTOOPT
+    | WSAENOTSOCK
+    | WSAEOPNOTSUPP
+    | OTHERKEEPALIVEERROR
+    deriving (Show, Eq, Ord)
 
+
+
+setKeepAlive :: CInt -> KeepAlive -> IO ( Either KeepAliveError ())
+setKeepAlive fd (KeepAlive onoff idle intvl) = do
+    rlt <- setKeepAlive_ fd (cFromBool onoff) idle intvl
+    return $ case rlt of
+        0 -> Right ()
+        997 -> Left WSA_IO_PENDING
+        995 -> Left WSA_OPERATION_ABORTED
+        10014 -> Left WSAEFAULT
+        10036 -> Left WSAEINPROGRESS
+        10004 -> Left WSAEINTR 
+        10022 -> Left WSAEINVAL
+        10050 -> Left WSAENETDOWN
+        10042 -> Left WSAENOPROTOOPT
+        10038 -> Left WSAENOTSOCK
+        10045 -> Left WSAEOPNOTSUPP
+        _ -> Left OTHERKEEPALIVEERROR
 
 
 -- getKeepAliveOption :: CInt -> IO KeepAlive

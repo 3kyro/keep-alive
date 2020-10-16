@@ -31,7 +31,7 @@ import Data.Word (Word32)
 
 #ifdef _WIN32
 
-setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO ()
+setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt
 setKeepAlive_ fd onoff idle intvl = 
     c_winSetKeepAlive fd (fromIntegral onoff) (fromIntegral $ idle * 1000) (fromIntegral $ intvl * 1000)
 
@@ -52,7 +52,7 @@ c_SO_KEEPALIVE = fromIntegral c_SO_KEEPALIVE_
 #ifdef _WIN32
 
 foreign import ccall unsafe "winSetKeepAlive"  
-    c_winSetKeepAlive :: CInt -> CULong -> CULong -> CULong -> IO ()         
+    c_winSetKeepAlive :: CInt -> CULong -> CULong -> CULong -> IO CInt         
 
 #else
 

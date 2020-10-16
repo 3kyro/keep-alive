@@ -18,7 +18,10 @@ ffi = do
     let addr = getAddr ip port
     withSocket addr $ \s -> do
         S.withFdSocket s $ \fd -> do
-             setKeepAlive fd test   
+            rlt <- setKeepAlive fd test
+            case rlt of
+                Left err -> print err
+                Right () -> return ()   
         threadDelay 10000000000    
         return ()
 

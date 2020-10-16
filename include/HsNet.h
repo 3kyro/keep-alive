@@ -18,7 +18,7 @@
 # endif
 #endif
 
-INLINE void 
+INLINE int 
 winSetKeepAlive(int s, ULONG onoff, ULONG time, ULONG intvl) {
 
     struct tcp_keepalive ka;
@@ -30,8 +30,9 @@ winSetKeepAlive(int s, ULONG onoff, ULONG time, ULONG intvl) {
     ka.keepaliveinterval = intvl;
     int sizeka = sizeof(ka);
 
-    WSAIoctl(s, SIO_KEEPALIVE_VALS, &ka, sizeka, NULL, 0, &size, NULL, NULL);
+    int rtn = WSAIoctl(s, SIO_KEEPALIVE_VALS, &ka, sizeka, NULL, 0, &size, NULL, NULL);
 
+    return rtn;
 };
 
 #endif /* HSNET_H */
