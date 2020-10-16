@@ -4,16 +4,16 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b2136bef85e8a512d791664e7974b9c7e06f45e4a12900f50c23f23285d819ef
+-- hash: e4fadd87f6fc7f6bca702c40ec776acd3dc1b4562423d193979808778831f6b8
 
 name:           keep-alive
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/keep-alive#readme>
-homepage:       https://github.com/githubuser/keep-alive#readme
-bug-reports:    https://github.com/githubuser/keep-alive/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2020 Author name here
+description:    Please see the README on GitHub at <https://github.com/3kyro/keep-alive#readme>
+homepage:       https://github.com/3kyro/keep-alive#readme
+bug-reports:    https://github.com/3kyro/keep-alive/issues
+author:         Kyriakos Papachrysanthou
+maintainer:     papachrysanthou.k@gmail.com
+copyright:      2020 Kyriakos Papachrysanthou
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -23,11 +23,12 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/keep-alive
+  location: https://github.com/3kyro/keep-alive
 
 library
   exposed-modules:
       Lib
+      LibForeign
   other-modules:
       Paths_keep_alive
   hs-source-dirs:
@@ -45,7 +46,9 @@ executable keep-alive-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , iproute >=1.7.9 && <1.8
     , keep-alive
+    , network >=3.1.1 && <3.2
   default-language: Haskell2010
 
 test-suite keep-alive-test
