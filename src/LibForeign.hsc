@@ -15,15 +15,7 @@ import Data.Word (Word32)
 
 #else
 
--- Check them on linux builds
-
--- #include <stdio.h>
--- #include <stdlib.h>
--- #include <unistd.h>
--- #include <sys/types.h>
--- #include <linux/socket.h>
--- #include <netinet/in.h>
--- #include <netinet/tcp.h>
+#include <netinet/tcp.h>
 
 #endif
 
@@ -38,10 +30,38 @@ getKeepAliveOnOff_ fd =
 #ifdef _WIN32
 
 setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt
-setKeepAlive_ fd onoff idle intvl = 
+setKeepAlive_ fd onoff idle intvl =
     c_winSetKeepAlive fd (fromIntegral onoff) (fromIntegral $ idle * 1000) (fromIntegral $ intvl * 1000)
 
 #else
+
+setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt
+setKeepAlive_ fd onoff idle intvl = do
+
+    let intOnOff = fromInteger $ toInteger onoff
+    let intIdle = fromInteger $ toInteger idle
+    let intIntvl = fromInteger $ toInteger intvl
+
+    onoffrtn <- setKeepAliveOption_ fd c_SOL_SOCKET c_SO_KEEPALIVE intOnOff
+    idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
+    intvlrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
+
+    return 0
+
+getKeepAliveOption_ :: CInt -> CInt -> CInt -> IO Int
+getKeepAliveOption_ fd level option =
+    alloca $ \ptr -> do
+        let sz = fromIntegral $ sizeOf ( undefined :: CInt)
+        with sz $ \ptr_sz -> do
+            c_getsockopt fd level option ptr ptr_sz
+            peek ptr
+
+setKeepAliveOption_ :: CInt -> CInt -> CInt -> CInt -> IO CInt
+setKeepAliveOption_ fd level option value = do
+    let sz = fromIntegral $ sizeOf ( undefined :: Int)
+    with value $ \ptr ->
+        c_setsockopt fd level option ptr sz
+
 
 #endif
 
@@ -90,5 +110,3 @@ foreign import ccall unsafe "getsockopt"
 foreign import ccall unsafe "setsockopt"   
   c_setsockopt :: CInt -> CInt -> CInt -> Ptr a -> CInt -> IO CInt  
  
-
-

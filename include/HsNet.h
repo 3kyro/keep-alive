@@ -6,7 +6,6 @@
 # include <ws2tcpip.h>
 # include <mswsock.h>
 # include <Mstcpip.h>
-#endif
 
 #ifndef INLINE
 # if defined(_MSC_VER)
@@ -24,7 +23,7 @@ winSetKeepAlive(int s, ULONG onoff, ULONG time, ULONG intvl) {
     struct tcp_keepalive ka;
 
     DWORD size;
-    
+
     ka.onoff = onoff; 
     ka.keepalivetime = time;
     ka.keepaliveinterval = intvl;
@@ -34,6 +33,7 @@ winSetKeepAlive(int s, ULONG onoff, ULONG time, ULONG intvl) {
 
     return rtn;
 };
+#endif /* _WIN32 */
 
 #endif /* HSNET_H */
 
