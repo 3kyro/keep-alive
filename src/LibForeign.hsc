@@ -40,6 +40,10 @@ c_TCP_KEEPINTVL_ = #const TCP_KEEPINTVL
 c_TCP_KEEPINTVL :: CInt
 c_TCP_KEEPINTVL = fromIntegral c_TCP_KEEPINTVL_
 
+foreign import ccall unsafe "getsockopt"
+  c_getsockopt :: CInt -> CInt -> CInt -> Ptr a -> Ptr CInt -> IO CInt
+foreign import ccall unsafe "setsockopt"
+  c_setsockopt :: CInt -> CInt -> CInt -> Ptr a -> CInt -> IO CInt
 
 
 
