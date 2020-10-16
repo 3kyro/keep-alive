@@ -2,6 +2,7 @@
 module Lib 
     ( KeepAlive (..)
     , setKeepAlive
+    , getKeepAliveOnOff
     ) where
 
 import           Foreign
@@ -32,7 +33,6 @@ data KeepAliveError
     deriving (Show, Eq, Ord)
 
 
-
 setKeepAlive :: CInt -> KeepAlive -> IO ( Either KeepAliveError ())
 setKeepAlive fd (KeepAlive onoff idle intvl) = do
     rlt <- setKeepAlive_ fd (cFromBool onoff) idle intvl
@@ -50,6 +50,9 @@ setKeepAlive fd (KeepAlive onoff idle intvl) = do
         10045 -> Left WSAEOPNOTSUPP
         _ -> Left OTHERKEEPALIVEERROR
 
+getKeepAliveOnOff :: CInt -> IO Bool
+getKeepAliveOnOff fd = 
+    cToBool . fromInteger . toInteger <$> getKeepAliveOnOff_ fd
 
 -- getKeepAliveOption :: CInt -> IO KeepAlive
 -- getKeepAliveOption fd = do

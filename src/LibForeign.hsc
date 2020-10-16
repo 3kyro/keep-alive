@@ -27,7 +27,13 @@ import Data.Word (Word32)
 
 #endif
 
-
+getKeepAliveOnOff_ :: CInt -> IO CInt
+getKeepAliveOnOff_ fd = 
+    alloca $ \ptr -> do
+            let sz = fromIntegral $ sizeOf ( undefined :: CInt)
+            with sz $ \ptr_sz -> do
+                c_getsockopt fd c_SOL_SOCKET c_SO_KEEPALIVE ptr ptr_sz
+                peek ptr 
 
 #ifdef _WIN32
 
