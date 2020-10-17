@@ -27,9 +27,9 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
-      LibForeign
+      KeepAlive
   other-modules:
+      LibForeign
       Paths_keep_alive
   hs-source-dirs:
       src

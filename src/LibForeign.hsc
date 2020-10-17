@@ -6,6 +6,7 @@ import Foreign.C.Types
 import Foreign.C.Error
 import Data.Word (Word32)
 
+-- Platform specific includes
 #ifdef _WIN32
 
 # include "HsNet.h"
@@ -13,9 +14,9 @@ import Data.Word (Word32)
 #else
 
 #include <netinet/tcp.h>
-#include <errno.h>
 
 #endif
+
 
 getKeepAliveOnOff_ :: CInt -> IO CInt
 getKeepAliveOnOff_ fd =
@@ -41,16 +42,14 @@ setKeepAlive_ fd onoff idle intvl = do
     let intIntvl = fromInteger $ toInteger intvl
 
     onoffrtn <- setKeepAliveOption_ fd c_SOL_SOCKET c_SO_KEEPALIVE intOnOff
-    -- Only check SO_KEEPALIVE for errors
-    -- convert to windows error codes for portability whe identical
+    idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
+    intrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
+
+    -- Error check
     Errno rtn <-
-        if onoffrtn /= 0
+        if onoffrtn + idlertn + intrtn /= 0
         then getErrno
         else return $ Errno 0
-
-    setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
-    setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
-
     return rtn
 
 getKeepAliveOption_ :: CInt -> CInt -> CInt -> IO Int

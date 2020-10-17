@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP,  ForeignFunctionInterface #-}
-module Lib 
+module KeepAlive
     ( KeepAlive (..)
+    , KeepAliveError (..)
     , setKeepAlive
     , getKeepAliveOnOff
     ) where
@@ -10,25 +11,50 @@ import           Foreign.C
 import           LibForeign
 import Data.Word (Word32)
 
+-- The number of unacknowledged probes before considering the connection dead is platform specific.
+-- See also : https://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/
 
+-- | The main data structure definig keep alive parameters
 data KeepAlive = KeepAlive
     { keepOnOff :: Bool
+      -- ^ Turns on / off keep alive probes
     , keepIdle  :: Word32
+      -- ^ The interval in seconds between the last data packet sent
+      -- and the first keepalive probe.
     , keepIntvl :: Word32
+      -- ^ The interval in seconds between subsequential keepalive probes.
     }
     deriving (Show, Eq, Ord)
 
+-- |
 data KeepAliveError
     = WSA_IO_PENDING
+      -- ^ An overlapped operation was successfully initiated
+      -- and completion will be indicated at a later time.
     | WSA_OPERATION_ABORTED
+      -- ^ An overlapped operation was canceled due to the
+      -- closure of the socket or the execution of the SIO_FLUSH IOCTL command.
     | WSAEFAULT
+      -- ^ The lpOverlapped or lpCompletionRoutine parameter is not totally
+      -- contained in a valid part of the user address space.
     | WSAEINPROGRESS
+      -- ^ The function is invoked when a callback is in progress.
     | WSAEINTR
+      -- ^ A blocking operation was interrupted.
     | WSAEINVAL
+      -- ^ The dwIoControlCode parameter is not a valid command, or a specified
+      -- input parameter is not acceptable, or the command is not applicable to
+      -- the type of socket specified.
     | WSAENETDOWN
+      -- ^ The network subsystem has failed.
     | WSAENOPROTOOPT
+      -- ^ The socket option is not supported on the specified protocol.
+      -- This error is returned for a datagram socket.
     | WSAENOTSOCK
+      -- ^ The descriptor s is not a socket.
     | WSAEOPNOTSUPP
+      -- ^ The specified IOCTL command is not supported. This error is returned if
+      --the SIO_KEEPALIVE_VALS IOCTL is not supported by the transport provider.
     | EBADF
       -- ^ The socket argument is not a valid file descriptor.
     | EDOM
@@ -51,7 +77,13 @@ data KeepAliveError
     | OTHERKEEPALIVEERROR
     deriving (Show, Eq, Ord)
 
-setKeepAlive :: CInt -> KeepAlive -> IO ( Either KeepAliveError ())
+-- | Set keep alive parameters for the current socket
+setKeepAlive ::
+    CInt
+    -- ^ Socket file descriptor
+    -> KeepAlive
+    -- ^ Keep alive parameters
+    -> IO ( Either KeepAliveError ())
 setKeepAlive fd (KeepAlive onoff idle intvl) = do
     rlt <- setKeepAlive_ fd (cFromBool onoff) idle intvl
     return $ case rlt of

@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import KeepAlive
 import qualified Network.Socket             as S
 import           Data.IP.Internal           (IPv4)
 import Data.IP (toHostAddress)
