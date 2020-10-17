@@ -17,6 +17,8 @@ copyright:      2020 Kyriakos Papachrysanthou
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+synopsis:       TCP keep alive implementation
+category:       Network
 extra-source-files:
     README.md
     ChangeLog.md
