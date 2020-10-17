@@ -27,7 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-      KeepAlive
+      Network.Socket.KeepAlive
   other-modules:
       LibForeign
       Paths_keep_alive

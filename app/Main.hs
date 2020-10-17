@@ -1,6 +1,6 @@
 module Main where
 
-import KeepAlive
+import Network.Socket.KeepAlive
 import qualified Network.Socket             as S
 import           Data.IP.Internal           (IPv4)
 import Data.IP (toHostAddress)
@@ -23,7 +23,7 @@ ffi = do
             rlt <- setKeepAlive fd test
             case rlt of
                 Left err -> print err
-                Right () -> return ()   
+                Right () -> return ()
             after <- getKeepAliveOnOff fd
             print after
         threadDelay 10000000000    
