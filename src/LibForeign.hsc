@@ -9,7 +9,7 @@ import Data.Word (Word32)
 -- Platform specific includes
 #ifdef _WIN32
 
-# include "HsNet.h"
+# include "CKa.h"
 
 #else
 
@@ -34,7 +34,7 @@ setKeepAlive_ fd onoff idle intvl =
 
 #else
 
-setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt 
+setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt
 setKeepAlive_ fd onoff idle intvl = do
 
     let intOnOff = fromInteger $ toInteger onoff
