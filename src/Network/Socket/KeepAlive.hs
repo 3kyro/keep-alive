@@ -11,7 +11,7 @@
 -- with the withFdSocket function:
 --
 -- > -- sock is a Socket type
--- > withFdSocket sock $ \fd do
+-- > withFdSocket sock $ \fd -> do
 -- >    before <- getKeepAliveOnOff fd
 -- >    print before -- False
 -- >    -- set keep alive on, idle 60 seconds, interval 2 seconds
