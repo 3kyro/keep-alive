@@ -36,11 +36,11 @@ import           LibForeign
 
 -- | The main data structure defining keep alive parameters
 data KeepAlive = KeepAlive
-    { kaOnOff   :: Bool
+    { kaOnOff :: Bool
     -- ^ Turns on / off keep alive probes
-    , kaIdle    :: Word32
+    , kaIdle  :: Word32
     -- ^ The interval in seconds between the last data packet sent and the first keep alive probe
-    , kaIntvl   :: Word32
+    , kaIntvl :: Word32
     -- ^ The interval in seconds between subsequential keepalive probes
     }
     deriving (Show, Eq, Ord)
@@ -48,7 +48,6 @@ data KeepAlive = KeepAlive
 -- | Errors starting with WSA are windows specific
 data KeepAliveError = WSA_IO_PENDING
     | WSA_OPERATION_ABORTED
-
     | WSAEFAULT
     | WSAEINPROGRESS
     | WSAEINTR
