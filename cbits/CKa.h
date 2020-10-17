@@ -1,5 +1,5 @@
-#ifndef HSNET_H
-#define HSNET_H
+#ifndef CKA_H
+#define CKA_H
 
 #ifdef _WIN32
 # include <winsock2.h>
@@ -35,5 +35,5 @@ winSetKeepAlive(int s, ULONG onoff, ULONG time, ULONG intvl) {
 };
 #endif /* _WIN32 */
 
-#endif /* HSNET_H */
+#endif /* CKA_H */
 
