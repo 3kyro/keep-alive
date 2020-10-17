@@ -7,7 +7,7 @@ import Foreign.C.Error
 import Data.Word (Word32)
 
 -- Platform specific includes
-#ifdef _WIN32
+#ifdef _WIN32 
 
 # include "CKa.h"
 
