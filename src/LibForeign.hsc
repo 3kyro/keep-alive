@@ -3,6 +3,7 @@ module LibForeign where
 
 import Foreign
 import Foreign.C.Types
+import Foreign.C.Error
 import Data.Word (Word32)
 
 #ifdef _WIN32
@@ -12,16 +13,17 @@ import Data.Word (Word32)
 #else
 
 #include <netinet/tcp.h>
+#include <errno.h>
 
 #endif
 
 getKeepAliveOnOff_ :: CInt -> IO CInt
-getKeepAliveOnOff_ fd = 
+getKeepAliveOnOff_ fd =
     alloca $ \ptr -> do
             let sz = fromIntegral $ sizeOf ( undefined :: CInt)
             with sz $ \ptr_sz -> do
                 c_getsockopt fd c_SOL_SOCKET c_SO_KEEPALIVE ptr ptr_sz
-                peek ptr 
+                peek ptr
 
 #ifdef _WIN32
 
@@ -39,10 +41,17 @@ setKeepAlive_ fd onoff idle intvl = do
     let intIntvl = fromInteger $ toInteger intvl
 
     onoffrtn <- setKeepAliveOption_ fd c_SOL_SOCKET c_SO_KEEPALIVE intOnOff
-    idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
-    intvlrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
+    -- Only check SO_KEEPALIVE for errors
+    -- convert to windows error codes for portability whe identical
+    Errno rtn <-
+        if onoffrtn /= 0
+        then getErrno
+        else return $ Errno 0
 
-    return 0
+    setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
+    setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
+
+    return rtn
 
 getKeepAliveOption_ :: CInt -> CInt -> CInt -> IO Int
 getKeepAliveOption_ fd level option =
@@ -92,7 +101,7 @@ c_TCP_KEEPIDLE = fromIntegral c_TCP_KEEPIDLE_
 c_TCP_KEEPCNT_ = #const TCP_KEEPCNT 
 
 c_TCP_KEEPCNT :: CInt
-c_TCP_KEEPCNT = fromIntegral c_TCP_KEEPCNT_  
+c_TCP_KEEPCNT = fromIntegral c_TCP_KEEPCNT_
 
 c_TCP_KEEPINTVL_ = #const TCP_KEEPINTVL
 
@@ -103,6 +112,6 @@ c_TCP_KEEPINTVL = fromIntegral c_TCP_KEEPINTVL_
 
 foreign import ccall unsafe "getsockopt"
   c_getsockopt :: CInt -> CInt -> CInt -> Ptr a -> Ptr CInt -> IO CInt   
-foreign import ccall unsafe "setsockopt"   
-  c_setsockopt :: CInt -> CInt -> CInt -> Ptr a -> CInt -> IO CInt  
- 
+foreign import ccall unsafe "setsockopt"
+  c_setsockopt :: CInt -> CInt -> CInt -> Ptr a -> CInt -> IO CInt
+
