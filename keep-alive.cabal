@@ -8,7 +8,6 @@ cabal-version: 1.12
 
 name:           keep-alive
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/3kyro/keep-alive#readme>
 homepage:       https://github.com/3kyro/keep-alive#readme
 bug-reports:    https://github.com/3kyro/keep-alive/issues
 author:         Kyriakos Papachrysanthou
@@ -19,6 +18,11 @@ license-file:   LICENSE
 build-type:     Simple
 synopsis:       TCP keep alive implementation
 category:       Network
+description:
+    This module allows you to set per-connection keep alive parameters on windows and linux enviroments.
+    For more information on keep alive signals see <https://en.wikipedia.org/wiki/Keepalive>.
+    See also <https://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/> for a linux specific implementation.
+
 extra-source-files:
     README.md
     ChangeLog.md
