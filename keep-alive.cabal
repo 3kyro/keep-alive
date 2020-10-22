@@ -7,7 +7,7 @@ cabal-version: 1.12
 -- hash: e4fadd87f6fc7f6bca702c40ec776acd3dc1b4562423d193979808778831f6b8
 
 name:           keep-alive
-version:        0.1.0.0
+version:        0.1.1.0
 homepage:       https://github.com/3kyro/keep-alive#readme
 bug-reports:    https://github.com/3kyro/keep-alive/issues
 author:         Kyriakos Papachrysanthou
@@ -26,6 +26,7 @@ description:
 extra-source-files:
     README.md
     ChangeLog.md
+    cbits/CKa.h
 
 source-repository head
   type: git
