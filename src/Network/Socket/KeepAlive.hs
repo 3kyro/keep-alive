@@ -49,7 +49,8 @@ data KeepAlive = KeepAlive
     deriving (Show, Eq, Ord)
 
 -- | Errors starting with WSA are windows specific
-data KeepAliveError = WSA_IO_PENDING
+data KeepAliveError
+    = WSA_IO_PENDING
     | WSA_OPERATION_ABORTED
     | WSAEFAULT
     | WSAEINPROGRESS
@@ -67,7 +68,7 @@ data KeepAliveError = WSA_IO_PENDING
     | ENOTSOCK
     | ENOMEM
     | ENOBUFS
-    | OTHER_KEEPALIVE_ERROR
+    | OTHER_KEEPALIVE_ERROR CInt
     deriving (Show, Eq, Ord)
 
 -- | Set keep alive parameters for the current socket
@@ -99,7 +100,7 @@ setKeepAlive fd (KeepAlive onoff idle intvl) = do
         88    -> Left ENOTSOCK
         12    -> Left ENOMEM
         105   -> Left ENOBUFS
-        _     -> Left OTHER_KEEPALIVE_ERROR
+        other -> Left $ OTHER_KEEPALIVE_ERROR other
 
 -- | Returns True if keep alive is active for the specified socket
 getKeepAliveOnOff ::

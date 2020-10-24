@@ -5,3 +5,5 @@
 - Fix build errors
 
 ## Unreleased changes
+
+- add return code to OTHER_KEEPALIVE_ERROR
