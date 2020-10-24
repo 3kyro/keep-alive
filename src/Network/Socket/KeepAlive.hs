@@ -108,9 +108,9 @@ getKeepAliveOnOff ::
     -- ^ Socket file descriptor
     -> IO Bool
 getKeepAliveOnOff fd =
-    cToBool . fromInteger . toInteger <$> getKeepAliveOnOff_ fd
+    cToBool <$> getKeepAliveOnOff_ fd
 
-cToBool :: Int -> Bool
+cToBool :: CInt -> Bool
 cToBool x
     | x == 0 = False
     | otherwise = True
