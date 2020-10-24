@@ -31,10 +31,9 @@ module Network.Socket.KeepAlive
     , getKeepAliveOnOff
     ) where
 
-import           Data.Word  (Word32)
-import           Foreign
-import           Foreign.C
-import           LibForeign
+import           Foreign    (Word32)
+import           Foreign.C  (CInt)
+import           LibForeign (getKeepAliveOnOff_, setKeepAlive_)
 
 
 -- | The main data structure defining keep alive parameters

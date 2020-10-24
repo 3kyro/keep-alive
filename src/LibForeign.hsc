@@ -1,9 +1,9 @@
 {-# LANGUAGE CPP,  ForeignFunctionInterface #-}
 module LibForeign where
 
-import Foreign
-import Foreign.C.Types
-import Foreign.C.Error
+import Foreign (Ptr, alloca, peek, sizeOf, with)
+import Foreign.C.Types (CInt (..))
+import Foreign.C.Error (Errno (..), getErrno)
 import Data.Word (Word32)
 
 -- Platform specific includes
