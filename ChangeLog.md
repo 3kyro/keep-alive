@@ -4,6 +4,8 @@
 
 - Fix build errors
 
-## Unreleased changes
+## 0.2.0.0
 
 - add return code to OTHER_KEEPALIVE_ERROR
+
+## Unreleased changes

@@ -1,7 +1,7 @@
 cabal-version: 1.12
 
 name:           keep-alive
-version:        0.1.1.0
+version:        0.2.0.0
 homepage:       https://github.com/3kyro/keep-alive#readme
 bug-reports:    https://github.com/3kyro/keep-alive/issues
 author:         Kyriakos Papachrysanthou
