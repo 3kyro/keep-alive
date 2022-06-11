@@ -59,7 +59,7 @@ setKeepAlive_ fd onoff idle intvl = do
         if onoffrtn + idlertn + intrtn /= 0
         then getErrno
         else return $ Errno 0
-    return 0
+    return rtn
 
 getKeepAliveOption_ :: CInt -> CInt -> CInt -> IO Int
 getKeepAliveOption_ fd level option =
