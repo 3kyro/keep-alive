@@ -15,7 +15,8 @@ import Data.Word (Word32)
 
 #include <sys/socket.h>
 #include <sys/types.h>
-
+#include <netinet/tcp.h>
+#include <netinet/in.h>
 #else
 
 #include <netinet/tcp.h>
@@ -46,12 +47,12 @@ setKeepAlive_ fd onoff idle intvl = do
     let intIntvl = fromInteger $ toInteger intvl
 
     onoffrtn <- setKeepAliveOption_ fd c_SOL_SOCKET c_SO_KEEPALIVE intOnOff
-#ifndef __APPLE__
+#ifdef __APPLE__
+    idlertn <- setKeepAliveOption_ fd c_IPPROTO_TCP c_TCP_KEEPALIVE intIdle
+    intrtn <- setKeepAliveOption_ fd c_IPPROTO_TCP c_TCP_KEEPINTVL intIntvl
+#else
     idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
     intrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
-#else
-    let idlertn = 0
-        intrtn = 0
 #endif
     -- Error check
     Errno rtn <-
@@ -87,33 +88,36 @@ c_SO_KEEPALIVE_ = #const SO_KEEPALIVE
 c_SO_KEEPALIVE :: CInt
 c_SO_KEEPALIVE = fromIntegral c_SO_KEEPALIVE_
 
+c_TCP_KEEPINTVL_ = #const TCP_KEEPINTVL
+c_TCP_KEEPINTVL :: CInt 
+c_TCP_KEEPINTVL = fromIntegral c_TCP_KEEPINTVL_ 
+
 #ifdef _WIN32
 
 foreign import ccall unsafe "winSetKeepAlive"  
     c_winSetKeepAlive :: CInt -> CULong -> CULong -> CULong -> IO CInt         
 
-#elifndef __APPLE__
+#elif __APPLE__
+c_IPPROTO_TCP_ = #const IPPROTO_TCP
+c_IPPROTO_TCP :: CInt
+c_IPPROTO_TCP = fromIntegral c_IPPROTO_TCP_ 
+
+c_TCP_KEEPALIVE_ = #const TCP_KEEPALIVE
+c_TCP_KEEPALIVE :: CInt
+c_TCP_KEEPALIVE = fromIntegral c_TCP_KEEPALIVE_ 
+#else
 
 c_SOL_TCP_ = #const SOL_TCP
-
 c_SOL_TCP :: CInt
 c_SOL_TCP = fromIntegral c_SOL_TCP_
 
 c_TCP_KEEPIDLE_ = #const TCP_KEEPIDLE
-
 c_TCP_KEEPIDLE :: CInt
 c_TCP_KEEPIDLE = fromIntegral c_TCP_KEEPIDLE_ 
 
-
 c_TCP_KEEPCNT_ = #const TCP_KEEPCNT 
-
 c_TCP_KEEPCNT :: CInt
 c_TCP_KEEPCNT = fromIntegral c_TCP_KEEPCNT_
-
-c_TCP_KEEPINTVL_ = #const TCP_KEEPINTVL
-
-c_TCP_KEEPINTVL :: CInt 
-c_TCP_KEEPINTVL = fromIntegral c_TCP_KEEPINTVL_ 
 
 #endif
 
