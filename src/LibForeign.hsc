@@ -49,13 +49,15 @@ setKeepAlive_ fd onoff idle intvl = do
 #ifndef __APPLE__
     idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
     intrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
-
+#else
+    let idlertn = 0
+        intrtn = 0
+#endif
     -- Error check
     Errno rtn <-
         if onoffrtn + idlertn + intrtn /= 0
         then getErrno
         else return $ Errno 0
-#endif
     return 0
 
 getKeepAliveOption_ :: CInt -> CInt -> CInt -> IO Int
