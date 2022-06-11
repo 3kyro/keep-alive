@@ -52,4 +52,5 @@ test-suite keep-alive-test
   build-depends:
       base >=4.7 && <5
     , keep-alive
+    , network
   default-language: Haskell2010

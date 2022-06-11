@@ -11,12 +11,16 @@ import Data.Word (Word32)
 
 # include "CKa.h"
 
+#elif __APPLE__
+
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #else
 
 #include <netinet/tcp.h>
 
 #endif
-
 
 getKeepAliveOnOff_ :: CInt -> IO CInt
 getKeepAliveOnOff_ fd =
@@ -42,6 +46,7 @@ setKeepAlive_ fd onoff idle intvl = do
     let intIntvl = fromInteger $ toInteger intvl
 
     onoffrtn <- setKeepAliveOption_ fd c_SOL_SOCKET c_SO_KEEPALIVE intOnOff
+#ifndef __APPLE__
     idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
     intrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
 
@@ -50,7 +55,8 @@ setKeepAlive_ fd onoff idle intvl = do
         if onoffrtn + idlertn + intrtn /= 0
         then getErrno
         else return $ Errno 0
-    return rtn
+#endif
+    return 0
 
 getKeepAliveOption_ :: CInt -> CInt -> CInt -> IO Int
 getKeepAliveOption_ fd level option =
@@ -84,7 +90,7 @@ c_SO_KEEPALIVE = fromIntegral c_SO_KEEPALIVE_
 foreign import ccall unsafe "winSetKeepAlive"  
     c_winSetKeepAlive :: CInt -> CULong -> CULong -> CULong -> IO CInt         
 
-#else
+#elifndef __APPLE__
 
 c_SOL_TCP_ = #const SOL_TCP
 
