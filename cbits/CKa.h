@@ -17,14 +17,14 @@
 # endif
 #endif
 
-INLINE int 
+INLINE int
 winSetKeepAlive(int s, ULONG onoff, ULONG time, ULONG intvl) {
 
     struct tcp_keepalive ka;
 
     DWORD size;
 
-    ka.onoff = onoff; 
+    ka.onoff = onoff;
     ka.keepalivetime = time;
     ka.keepaliveinterval = intvl;
     int sizeka = sizeof(ka);
