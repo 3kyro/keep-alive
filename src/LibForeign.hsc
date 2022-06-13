@@ -23,6 +23,14 @@ import Data.Word (Word32)
 
 #endif
 
+-- All platforms ---------------------------------------------------------------
+
+foreign import ccall unsafe "getsockopt"
+  c_getsockopt :: CInt -> CInt -> CInt -> Ptr a -> Ptr CInt -> IO CInt
+
+foreign import ccall unsafe "setsockopt"
+  c_setsockopt :: CInt -> CInt -> CInt -> Ptr a -> CInt -> IO CInt
+
 getKeepAliveOnOff_ :: CInt -> IO CInt
 getKeepAliveOnOff_ fd =
     alloca $ \ptr -> do
@@ -31,6 +39,17 @@ getKeepAliveOnOff_ fd =
                 c_getsockopt fd c_SOL_SOCKET c_SO_KEEPALIVE ptr ptr_sz
                 peek ptr
 
+c_SOL_SOCKET_ = #const SOL_SOCKET
+
+c_SOL_SOCKET :: CInt
+c_SOL_SOCKET = fromIntegral c_SOL_SOCKET_
+
+c_SO_KEEPALIVE_ = #const SO_KEEPALIVE
+
+c_SO_KEEPALIVE :: CInt
+c_SO_KEEPALIVE = fromIntegral c_SO_KEEPALIVE_
+
+-- Win32 -----------------------------------------------------------------------
 #ifdef _WIN32
 
 foreign import ccall unsafe "winSetKeepAlive"
@@ -40,30 +59,8 @@ setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt
 setKeepAlive_ fd onoff idle intvl =
     c_winSetKeepAlive fd (fromIntegral onoff) (fromIntegral $ idle * 1000) (fromIntegral $ intvl * 1000)
 
+-- posix -----------------------------------------------------------------------
 #else
-
-setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt
-setKeepAlive_ fd onoff idle intvl = do
-
-    let intOnOff = fromInteger $ toInteger onoff
-    let intIdle = fromInteger $ toInteger idle
-    let intIntvl = fromInteger $ toInteger intvl
-
-    onoffrtn <- setKeepAliveOption_ fd c_SOL_SOCKET c_SO_KEEPALIVE intOnOff
-#ifdef __APPLE__
-    idlertn <- setKeepAliveOption_ fd c_IPPROTO_TCP c_TCP_KEEPALIVE intIdle
-    intrtn <- setKeepAliveOption_ fd c_IPPROTO_TCP c_TCP_KEEPINTVL intIntvl
-#else
-    idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
-    intrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
--- __APPLE__
-#endif
-    -- Error check
-    Errno rtn <-
-        if onoffrtn + idlertn + intrtn /= 0
-        then getErrno
-        else return $ Errno 0
-    return rtn
 
 getKeepAliveOption_ :: CInt -> CInt -> CInt -> IO Int
 getKeepAliveOption_ fd level option =
@@ -79,29 +76,34 @@ setKeepAliveOption_ fd level option value = do
     with value $ \ptr ->
         c_setsockopt fd level option ptr sz
 
+setKeepAlive_ :: CInt -> Word32 -> Word32 -> Word32 -> IO CInt
+setKeepAlive_ fd onoff idle intvl = do
 
--- ifdef# _WIN32
+    let intOnOff = fromInteger $ toInteger onoff
+    let intIdle = fromInteger $ toInteger idle
+    let intIntvl = fromInteger $ toInteger intvl
+
+    onoffrtn <- setKeepAliveOption_ fd c_SOL_SOCKET c_SO_KEEPALIVE intOnOff
+
+-- Apple specific kkep alive settings
+#ifdef __APPLE__
+    idlertn <- setKeepAliveOption_ fd c_IPPROTO_TCP c_TCP_KEEPALIVE intIdle
+    intrtn <- setKeepAliveOption_ fd c_IPPROTO_TCP c_TCP_KEEPINTVL intIntvl
+#else
+    idlertn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPIDLE intIdle
+    intrtn <- setKeepAliveOption_ fd c_SOL_TCP c_TCP_KEEPINTVL intIntvl
+-- __APPLE__
 #endif
-
-
-c_SOL_SOCKET_ = #const SOL_SOCKET
-
-c_SOL_SOCKET :: CInt
-c_SOL_SOCKET = fromIntegral c_SOL_SOCKET_
-
-
-c_SO_KEEPALIVE_ = #const SO_KEEPALIVE
-
-c_SO_KEEPALIVE :: CInt
-c_SO_KEEPALIVE = fromIntegral c_SO_KEEPALIVE_
-
-#ifndef _WIN32
+    -- Error check
+    Errno rtn <-
+        if onoffrtn + idlertn + intrtn /= 0
+        then getErrno
+        else return $ Errno 0
+    return rtn
 
 c_TCP_KEEPINTVL_ = #const TCP_KEEPINTVL
 c_TCP_KEEPINTVL :: CInt
 c_TCP_KEEPINTVL = fromIntegral c_TCP_KEEPINTVL_
-
-
 
 #ifdef __APPLE__
 
@@ -130,12 +132,6 @@ c_TCP_KEEPCNT = fromIntegral c_TCP_KEEPCNT_
 -- __APPLE__ Check
 #endif
 
-
--- _WIN32 Check
+-- End of POSIX ----------------------------------------------------------------
 #endif
-
-foreign import ccall unsafe "getsockopt"
-  c_getsockopt :: CInt -> CInt -> CInt -> Ptr a -> Ptr CInt -> IO CInt
-foreign import ccall unsafe "setsockopt"
-  c_setsockopt :: CInt -> CInt -> CInt -> Ptr a -> CInt -> IO CInt
 
