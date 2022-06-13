@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------
 
 -- |
--- This module allows you to set per-connection keep alive parameters on windows and linux enviroments.
+-- This module allows you to set per-connection keep alive parameters on windows, linux and darwin environments.
 -- For more information on keep alive signals see https://en.wikipedia.org/wiki/Keepalive.
 -- See also https://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/ for a linux specific implementation.
 --
