@@ -1,8 +1,8 @@
-import Network.Socket hiding (KeepAlive) 
-import Network.Socket.KeepAlive
-import qualified Control.Exception as E
 import Control.Exception (assert)
+import qualified Control.Exception as E
 import Data.Either (isRight)
+import Network.Socket hiding (KeepAlive)
+import Network.Socket.KeepAlive
 
 main :: IO ()
 main = do
@@ -18,8 +18,9 @@ main = do
       return ()
   where
     resolve = do
-        let hints = defaultHints {
-                addrFlags = [AI_PASSIVE]
+      let hints =
+            defaultHints
+              { addrFlags = [AI_PASSIVE]
               , addrSocketType = Stream
               }
-        head <$> getAddrInfo (Just hints) (Just "localhost") Nothing
+      head <$> getAddrInfo (Just hints) (Just "localhost") Nothing

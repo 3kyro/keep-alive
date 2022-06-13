@@ -7,7 +7,7 @@ import Foreign.C.Error (Errno (..), getErrno)
 import Data.Word (Word32)
 
 -- Platform specific includes
-#ifdef _WIN32 
+#ifdef _WIN32
 
 # include "CKa.h"
 
@@ -84,27 +84,27 @@ c_SOL_SOCKET :: CInt
 c_SOL_SOCKET = fromIntegral c_SOL_SOCKET_
 
 c_SO_KEEPALIVE_ = #const SO_KEEPALIVE
- 
+
 c_SO_KEEPALIVE :: CInt
 c_SO_KEEPALIVE = fromIntegral c_SO_KEEPALIVE_
 
 c_TCP_KEEPINTVL_ = #const TCP_KEEPINTVL
-c_TCP_KEEPINTVL :: CInt 
-c_TCP_KEEPINTVL = fromIntegral c_TCP_KEEPINTVL_ 
+c_TCP_KEEPINTVL :: CInt
+c_TCP_KEEPINTVL = fromIntegral c_TCP_KEEPINTVL_
 
 #ifdef _WIN32
 
-foreign import ccall unsafe "winSetKeepAlive"  
-    c_winSetKeepAlive :: CInt -> CULong -> CULong -> CULong -> IO CInt         
+foreign import ccall unsafe "winSetKeepAlive"
+    c_winSetKeepAlive :: CInt -> CULong -> CULong -> CULong -> IO CInt
 
 #elif __APPLE__
 c_IPPROTO_TCP_ = #const IPPROTO_TCP
 c_IPPROTO_TCP :: CInt
-c_IPPROTO_TCP = fromIntegral c_IPPROTO_TCP_ 
+c_IPPROTO_TCP = fromIntegral c_IPPROTO_TCP_
 
 c_TCP_KEEPALIVE_ = #const TCP_KEEPALIVE
 c_TCP_KEEPALIVE :: CInt
-c_TCP_KEEPALIVE = fromIntegral c_TCP_KEEPALIVE_ 
+c_TCP_KEEPALIVE = fromIntegral c_TCP_KEEPALIVE_
 #else
 
 c_SOL_TCP_ = #const SOL_TCP
@@ -113,16 +113,16 @@ c_SOL_TCP = fromIntegral c_SOL_TCP_
 
 c_TCP_KEEPIDLE_ = #const TCP_KEEPIDLE
 c_TCP_KEEPIDLE :: CInt
-c_TCP_KEEPIDLE = fromIntegral c_TCP_KEEPIDLE_ 
+c_TCP_KEEPIDLE = fromIntegral c_TCP_KEEPIDLE_
 
-c_TCP_KEEPCNT_ = #const TCP_KEEPCNT 
+c_TCP_KEEPCNT_ = #const TCP_KEEPCNT
 c_TCP_KEEPCNT :: CInt
 c_TCP_KEEPCNT = fromIntegral c_TCP_KEEPCNT_
 
 #endif
 
 foreign import ccall unsafe "getsockopt"
-  c_getsockopt :: CInt -> CInt -> CInt -> Ptr a -> Ptr CInt -> IO CInt   
+  c_getsockopt :: CInt -> CInt -> CInt -> Ptr a -> Ptr CInt -> IO CInt
 foreign import ccall unsafe "setsockopt"
   c_setsockopt :: CInt -> CInt -> CInt -> Ptr a -> CInt -> IO CInt
 
